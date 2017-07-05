@@ -5,5 +5,5 @@ LABEL maintainer “misha.yang@daocloud.io"
 WORKDIR /project
 ADD . /project
 
-RUN mvn install -Dmaven.test.skip=true
+RUN mvn package
 CMD ["mvn"]
