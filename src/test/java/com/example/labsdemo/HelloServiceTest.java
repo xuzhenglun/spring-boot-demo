@@ -17,7 +17,7 @@ public class HelloServiceTest {
 
         Assert.assertTrue(helloService.hello(null) == "hi");
         Assert.assertTrue(helloService.hello("hi") == "hi");
-        Assert.assertTrue(helloService.hello("hii") == "hii");
+        Assert.assertTrue(helloService.hello("bye") == "bye");
 
     }
 
