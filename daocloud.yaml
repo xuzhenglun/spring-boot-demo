@@ -1,0 +1,54 @@
+version: 3
+stages:
+- 测试阶段
+- 构建阶段
+- 发布阶段
+Sonar Report:
+  stage: 测试阶段
+  job_type: maven
+  only:
+    branches:
+    - .*
+    tags:
+    - .*
+  pull_request: false
+  allow_failure: false
+  envs: []
+  image: maven:3.5.0-jdk-8-alpine
+  name: Sonar Report
+  scripts:
+  - '# Working directory with cloned repository: /daocloud/builder/src'
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Pcoverage-per-test
+  - mvn sonar:sonar -Dsonar.host.url=http://54.223.23.243:9000 -Dsonar.login=admin
+    -Dsonar.password=GeQomc1kSyaD4Dbt -Dsonar.dynamicAnalysis=reuseReports -Dsonar.java.covergaePlugin=jacoco
+  services: []
+发布到 DCE:
+  stage: 发布阶段
+  job_type: DCE_deploy
+  only:
+    branches:
+    - .*
+    tags:
+    - .*
+  allow_failure: false
+  app_name: spring-boot-demo
+  cluster_id: b0693c81-cfd1-4cd6-bcec-d93e1130fb20
+构建镜像:
+  stage: 构建阶段
+  job_type: lite_image_build
+  only:
+    branches:
+    - .*
+    tags:
+    - .*
+  allow_failure: false
+  compile:
+    build_dir: /
+    cache: true
+    dockerfile_path: /Dockerfile-package
+  extract:
+  - /project/target/labs-demo-0.0.1-SNAPSHOT.jar
+  package:
+    build_dir: /
+    cache: true
+    dockerfile_path: /Dockerfile-publish
